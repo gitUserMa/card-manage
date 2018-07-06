@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project name="Framework" default="main" basedir=".">
+
+	<property name="deploy.dir" value="G:/apache-tomcat-7.0.55-loushang/webapps/cardmanage" />
+
+	<target name="copy" description="拷贝文件">
+		<!--拷贝WEB-INF配置文件-->
+		<copy todir="${deploy.dir}">
+			<fileset dir="src/main/webapp" includes="**" />
+		</copy>
+	</target>
+
+	<target name="main" description="==>发布程序,拷贝">
+		<antcall target="copy" />
+	</target>
+</project>
