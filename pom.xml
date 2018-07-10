@@ -91,6 +91,18 @@
 			<version>2.2</version>
 			<scope>provided</scope>
 		</dependency>
+		<!--二维码依赖j-->
+		<dependency>
+			<groupId>com.google.zxing</groupId>
+			<artifactId>core</artifactId>
+			<version>2.2</version>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.12</version>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 
 	<!-- 配置私服使用信息 -->
