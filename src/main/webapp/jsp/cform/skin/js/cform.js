@@ -1,6 +1,6 @@
 /**
  * 运行时表单静态类
- * 
+ *
  */
 (function($) {
 	if (typeof CForm == "undefined") {
@@ -13,17 +13,17 @@
 	CForm.on = function(eventName, func) {
 		$(CForm).on.apply($(CForm), arguments);
 	};
-	
+
 	/**
 	 * 触发事件
 	 */
 	CForm.trigger = function(eventName, args) {
 		$(CForm).trigger.apply($(CForm), arguments);
 	};
-	
+
 	/**
 	 * 获得页面上所有的表单数据
-	 * 
+	 *
 	 * @returns CForm.List，每一项为一个CForm.Map
 	 */
 	CForm.getAllFormData = function() {
@@ -41,7 +41,7 @@
 
 	/**
 	 * 获得指定表单数据
-	 * 
+	 *
 	 * @param form
 	 *            表单
 	 * @returns CForm.Map key为fieldId,value为fieldValue
@@ -68,14 +68,14 @@
 					|| $(field).closest("[cf_elementType=form]").attr("id")!=$form.attr("id")) {
 				return;
 			}
-			
+
 			var fieldValue = CForm.getFieldValue(field);
 			// 若已有数据，则用","间隔各个数据
 			var preFieldValue = map.get(field.id);
 			if (preFieldValue) {
 				fieldValue = $.trim(fieldValue) ? preFieldValue + "," + fieldValue : preFieldValue;
 			}
-			
+
 			map.put(field.id, fieldValue);
 		});
 
@@ -89,24 +89,24 @@
 			var dynDataMap = new CForm.Map();
 			//分页信息
 			var pageInfo = new CForm.Map();
-			
+
 			var isPaging = $(dynRow).attr("cf_isPaging");
 			if(isPaging == "true"){
 				// 获取当前页数
 				var start = $(dynRow).find(".pageBarContainer .curPageNum").val();
 				// 每页显示条数
 				var limit = $(dynRow).find(".pageBarContainer .pageSize option:selected").val();
-				
+
 				pageInfo.put("isPaging","true");
 				pageInfo.put("start",start);
 				pageInfo.put("limit",limit);
 			}else{
 				pageInfo.put("isPaging","false");
 			}
-			
+
 			// 查找除模板行外，所有有状态的行
 			var $trs = $('tbody tr[cf_recordState][cf_recordState!=temp]', dynRow);
-			
+
 			$.each($trs, function(j, tr) {
 				// 数据状态
 				var recordState = $(tr).attr("cf_recordState");
@@ -116,10 +116,10 @@
 				record.put("cf_recordState",recordState);
 				record.put("SUB_TBL_NUM",subTblNum);
 				var $fields = $(tr).find('[cf_modelItemId]');
-				
+
 				$.each($fields, function(k, field) {
 					var fieldValue = CForm.getFieldValue(field);
-					
+
 					// 若已有数据，则用","间隔各个数据
 					var preFieldValue = record.get(field.id);
 					if (preFieldValue) {
@@ -132,7 +132,7 @@
 			});
 			dynDataMap.put("pageInfo",pageInfo)
 			dynDataMap.put("zoneData",recordsLst)
-			
+
 			map.put(dynRow.id, dynDataMap);
 		});
 
@@ -142,22 +142,22 @@
 				return;
 			// 存放动态表格的各表格数据
 			var recordsLst = new CForm.List();
-			
+
 			var datas = map.get(dynTable.id);
 			if (datas && datas.size()) {
 				recordsLst = datas;
 			}
-			
+
 			var $table = $('table', dynTable);
 			$.each($table, function(j, table) {
-				
+
 				var record = new CForm.Map();
-				
+
 				var $fields = $(table).find('[cf_modelItemId]');
-				
+
 				$.each($fields, function(k, field) {
 					var fieldValue = CForm.getFieldValue(field);
-					
+
 					// 若已有数据，则用","间隔各个数据
 					var preFieldValue = rowData.get(field.id);
 					if (preFieldValue) {
@@ -165,20 +165,20 @@
 					}
 					record.put(field.id, fieldValue);
 				});
-				
+
 				recordsLst.add(rowData);
 			});
-			
+
 			var dynTableDataMap = new CForm.Map();
 			dynTableDataMap.put("isPaging","false");
 			dynTableDataMap.put("zoneData",dynTableRows);
-			
+
 			map.put(dynTable.id, dynTableDataMap);
 		});
 
 		return map;
 	};
-	
+
 	/**
 	 * 获取表单组数据
 	 * @returns CForm.Map key为fieldId,value为fieldValue
@@ -189,7 +189,7 @@
 		var formsMap = new CForm.Map();
 		var mainFormMap = new CForm.Map();
 		var subFormsMap = new CForm.Map();
-		
+
 		// 组装表单组的主表单数据
 		var mainFormData = CForm.getFormData(forms.eq(0));
 		/*if(window.formDataId){
@@ -197,14 +197,14 @@
 		}*/
 		mainFormMap.put(forms.eq(0).attr("id"),mainFormData);
 		formsMap.put("M",mainFormMap);
-		
+
 		// 组装表单组的子表单数据
 		for(var i = 1;i<forms.length;i++){
 			var subFormData = CForm.getFormData(forms.eq(i));
 			subFormsMap.put(forms.eq(i).attr("id"),subFormData);
 		}
 		formsMap.put("S",subFormsMap);
-		
+
 		return formsMap
 	}
 
@@ -217,10 +217,10 @@
 	CForm.mainFormNum = 0;
 	// 记录setSubFormData被执行的次数
 	CForm.subFormNum = 0;
-	
+
 	/**
 	 * 向指定的表单里设置实际数据
-	 * 
+	 *
 	 * @param form
 	 *            表单
 	 * @param data
@@ -232,9 +232,9 @@
 		CForm.mainFormNum++;
 		var type = byAttr ? 'cf_alias' : 'cf_modelId';
 		byAttr = byAttr ? byAttr : 'cf_modelItemId';
-		
+
 		var $form = $(form);
-		
+
 		// 动态行Map，缓存动态行
 		var dynRowMap = new CForm.Map();
 		var $dynRows = $form.find(".cfDynRow");
@@ -247,7 +247,7 @@
 				data[typeValue] = [];
 			}
 		});
-		
+
 		// 动态表格Map，缓存动态表格
 		var dynTableMap = new CForm.Map();
 		var $dynTables = $form.find(".cfDynTable");
@@ -255,17 +255,17 @@
 			var typeValue = $(this).attr(type);
 			dynTableMap.put(typeValue, $(this));
 		});
-		
+
 		// 设置子表数据
 		function _setSubFormData(dynRowMap, dynTableMap, dynValueMap, byAttr) {
 			return function() {
 				CForm.setSubFormData(dynRowMap, dynTableMap, dynValueMap, byAttr);
 			};
 		}
-		
+
 		// 缓存子表单数据
 		var dynValueMap = new CForm.Map();
-		
+
 		// 为每个域赋值
 		for (var key in data) {
 			var value = data[key];
@@ -273,19 +273,19 @@
 			if (!value) {
 				continue;
 			}
-			
+
 			// 动态行
 			if (dynRowMap.get(key)) {
 				dynValueMap.put(key, value);
 				continue;
 			}
-			
+
 			// 动态表格
 			if (dynTableMap.get(key)) {
 				dynValueMap.put(key, value);
 				continue;
 			}
-			
+
 			// 主表单
 			var $field = $form.find("[" + byAttr + "=" + key + "]");
 			$.each($field, function(idx, input) {
@@ -298,7 +298,7 @@
 
 	/**
 	 * 初始化子表单实际数据
-	 * 
+	 *
 	 * @param dynRowMap
 	 *            动态行
 	 * @param dynTableMap
@@ -318,7 +318,7 @@
 					CForm.setDynRowData($dynRow, dynRowValues, byAttr);
 				}
 			}
-			
+
 			for (var dtKey in dynTableMap.map) {
 				var $dynTable = dynTableMap.get(dtKey);
 				var dynTableValues = dynValueMap.get(dtKey);
@@ -327,7 +327,7 @@
 				}
 			}
 		}
-		
+
 		// 当CForm.subFormNum=CForm.mainFormNum时才说明所有的子表单已经设置完毕
 		if (!CForm.isInitialized && CForm.subFormNum == CForm.mainFormNum) {
 			// 触发子表单数据加载完成事件，用于控制域权限加载时机
@@ -335,12 +335,12 @@
 			// 设置表单已初始化
 			CForm.isInitialized = true;
 		}
-		
+
 	};
-	
+
 	/**
 	 * 向指定的动态行里设置实际数据，如果要设置的动态行有数据，则先将数据删除
-	 * 
+	 *
 	 * @param $dynRow
 	 *            动态行
 	 * @param value
@@ -370,21 +370,21 @@
 		$firstRow.attr("cf_recordState","temp");
 		// 隐藏第一行
 		$firstRow.hide();
-		
+
 		// th中可能会有“增加”按钮，需要移除
 		$dynRow.find("th:last .cfAddRow").remove();
 		// 清空动态行的数据
 		$dynRow.find(".cfDynRowTable tbody tr[cf_recordState][cf_recordState!=temp]").remove();
-		
+
 		CForm.addRows($dynRow, $tr, byAttr, value);
-		
+
 		// 触发列合计单击事件，计算合计值
 		$dynRow.find(".cfColSum").trigger("click");
 	};
-	
+
 	/**
 	 * 向指定的动态表格里设置实际数据
-	 * 
+	 *
 	 * @param $dynTable
 	 *            动态表格
 	 * @param value
@@ -400,7 +400,7 @@
 		var $table = $dynTable.find('table:first').clone(true);
 		// 第一个表格数据
 		var firstTableData = value[0];
-		
+
 		// 设置第一个表格中的所有域
 		var $fieldsTable = $dynTable.find('table:first [' + byAttr + ']');
 		$.each($fieldsTable, function(i, field) {
@@ -409,18 +409,18 @@
 				CForm.setFieldValue(field, val);
 			}
 		});
-		
+
 		// 设置动态表格的其他表格数据
 		if (value.length < 2) {
 			return;
 		}
-		
+
 		CForm.addTables($dynTable, $table, byAttr, value);
 	};
-	
+
 	/**
 	 * 根据业务含义向指定的表单里设置实际数据
-	 * 
+	 *
 	 * @param form
 	 *            表单
 	 * @param data
@@ -429,10 +429,10 @@
 	CForm.setFormDataByBizMean = function(form, data) {
 		CForm.setFormData(form, data, "cf_bizMean");
 	};
-	
+
 	/**
 	 * 向指定的表单里，设置数据绑定
-	 * 
+	 *
 	 * @param form
 	 *            表单
 	 * @param data
@@ -454,7 +454,7 @@
 
 	/**
 	 * 向指定的表单里，根据域ID设置数据绑定
-	 * 
+	 *
 	 * @param form
 	 *            表单
 	 * @param data
@@ -471,7 +471,7 @@
 			$.each($field, function(i, field) {
 				CForm.setFieldDataBind(field, value);
 			});
-			
+
 			// 设置可编辑列表中编辑域的绑定值
 			var editFieldId = $("#"+key).attr("cf_editfieldid");
 			if(editFieldId){
@@ -483,7 +483,7 @@
 
 	/**
 	 * 获得域值
-	 * 
+	 *
 	 * @param field
 	 *            域
 	 */
@@ -551,7 +551,7 @@
 	};
 	/**
 	 * 设置域值
-	 * 
+	 *
 	 * @param field
 	 *            域
 	 * @param value
@@ -639,7 +639,7 @@
 							$(field).parent().find(".cfFilesFields").append($fileInfo);
 						}
 					}
-					
+
 				}else{
 					$(field).val(value);
 				}
@@ -654,7 +654,7 @@
 
 	/**
 	 * 设置域绑定
-	 * 
+	 *
 	 * @param field
 	 *            域
 	 * @param value
@@ -734,7 +734,7 @@
 								isValid = false;
 							}
 						}
-						
+
 						break;
 					default:
 						if (!$.trim($field.val())) {
@@ -753,7 +753,7 @@
 		if(!isValid) {
 			return false;
 		}
-		
+
 		// 数据类型校验
 		$('.cfIsInteger').each(function(i, field) {
 			var $field = $(field);
@@ -764,11 +764,11 @@
 				return false;
 			}
 		});
-		
+
 		if(!isValid) {
 			return false;
 		}
-		
+
 		// 小数校验
 		$('.cfIsFloat').each(function(i, field) {
 			var $field = $(field);
@@ -780,7 +780,7 @@
 						CForm.showTips($field, "cfIsFloat");
 						isValid = false;
 						return false;
-					}					
+					}
 				}else {
 					// 精确度校验
 					var precision = $field.attr("cf_fieldPrecision");
@@ -795,11 +795,11 @@
 				}
 			}
 		});
-		
+
 		if(!isValid) {
 			return false;
 		}
-		
+
 		// 邮政编码校验
 		$('.cfIsZipCode').each(function(i, field) {
 			var $field = $(field);
@@ -810,11 +810,11 @@
 				return false;
 			}
 		});
-		
+
 		if(!isValid) {
 			return false;
 		}
-		
+
 		// 电子邮件校验
 		$('.cfIsEmail').each(function(i, field) {
 			var $field = $(field);
@@ -825,11 +825,11 @@
 				return false;
 			}
 		});
-		
+
 		if(!isValid) {
 			return false;
 		}
-		
+
 		// 身份证号校验
 		$('.cfIsIdCard').each(function(i, field) {
 			var $field = $(field);
@@ -841,11 +841,11 @@
 				return false;
 			}
 		});
-		
+
 		if(!isValid) {
 			return false;
 		}
-		
+
 		// 固定电话校验
 		$('.cfIsPhoneNum').each(function(i, field) {
 			var $field = $(field);
@@ -856,11 +856,11 @@
 				return false;
 			}
 		});
-		
+
 		if(!isValid) {
 			return false;
 		}
-		
+
 		// 手机号码校验
 		$('.cfIsMobileNum').each(function(i, field) {
 			var $field = $(field);
@@ -871,11 +871,11 @@
 				return false;
 			}
 		});
-		
+
 		if(!isValid) {
 			return false;
 		}
-		
+
 		// 正则表达式校验
 		$('.cfIsRegExp').each(function(i, field){
 			var $field = $(field);
@@ -892,13 +892,13 @@
 
 		return isValid;
 	};
-	
+
 	/**
 	 * 提示校验信息
 	 */
 	CForm.showTips = function($field, className, param) {
 		var msg  = "";
-		
+
 		// 动态行域判断
 		var $dynRows = $field.parents(".cfDynRow");
 		if ($dynRows.length) {
@@ -908,9 +908,9 @@
 			var colNum = $field.parent("td").index() + 1;
 			msg  = "动态行[" + dName + "]第" + rowNum + "行，第"+ colNum + "列中";
 		}
-		
+
 		var fName = $field.attr("name");
-		
+
 		switch (className) {
 		// 必填
 		case "cfIsRequired":
@@ -986,26 +986,26 @@
 	CForm.isEmail = function(val) {
 		return /^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/g.test(val);
 	};
-	
+
 	/**
 	 * 判断值是否为固定电话号码
 	 */
 	CForm.cfIsPhoneNum = function(val) {
 		return /^((\(\d{2,3}\))|(\d{3}\-))?(\(0\d{2,3}\)|0\d{2,3}-)?[1-9]\d{6,7}(\-\d{1,4})?$/g.test(val);
 	};
-	
+
 	/**
 	 * 判断值是否为手机号码
 	 */
 	CForm.cfIsMobileNum = function(val) {
 		return /^((\(\d{2,3}\))|(\d{3}\-))?0{0,1}1[3|5|6|8][0-9]{9}$/g.test(val);
 	};
-	
+
 	/**
 	 * 将域设置为只读
 	 */
 	CForm.setFieldReadOnly = function(field) {
-		
+
 		var $field = $(field);
 		// 设置背景颜色
 		var td = $field.parent("td");
@@ -1014,7 +1014,7 @@
 			// 去掉必填符号
 			td.find("font.isRequiredSign").remove();
 		}
-		
+
 		var fieldValue = "";
 		// 根据域类型获取域值
 		switch (field.type) {
@@ -1103,7 +1103,7 @@
 			}else{
 				$field.after("<font class='readOnlyFieldVal'>" + fieldValue + "</font>");
 			}
-			
+
 		}
 	};
 
@@ -1116,36 +1116,36 @@
 			alert("未获取到要操作的表单！");
 			return;
 		}
-		
+
 		// 将所有可见域设置成只读
 		var fields = $form.find("[cf_elementType=field]:visible");
 		$.each(fields, function(i,field) {
 			// 设置域只读
 			CForm.setFieldReadOnly(field);
 		});
-		
+
 		// 设置动态行和可编辑列表序号列的背景色、隐藏操作列
 		$form.find(".cfDynRow").each(function(i,dynRow){
 			// 处理序号列
 			$(dynRow).find("tbody tr").each(function(i,tr){
 				$(tr).find("td:first").addClass("cfIsReadonly");
 			});
-			
+
 			// 隐藏操作列
 			$(dynRow).find("th:last").hide();
 			$(dynRow).find(".cfAddAndDelTd").hide();
 		});
-		
+
 		// 处理可编辑列表
 		if($form.hasClass("cfEditGrid")){
 			setEditGridReadOnly($form);
 			return;
 		}
-		
+
 		$form.find(".cfEditGrid").each(function(i,editGrid){
 			setEditGridReadOnly(editGrid);
 		});
-		
+
 		function setEditGridReadOnly(editGrid){
 			// 隐藏可编辑列表的“增加”按钮
 			$(editGrid).find(".cfAddEditGrid").hide();
@@ -1162,7 +1162,7 @@
 			}
 		};
 	};
-	
+
 	/**
 	 * 将所有域替换为标签(为兼容保留)
 	 */
@@ -1202,10 +1202,10 @@
 				refFields.push(refFieldId);
 			}
 		}
-		
+
 		return refFields;
 	};
-	
+
 	/**
 	 * 构建初始化动态行数据
 	 */
@@ -1218,7 +1218,7 @@
 			$dynRow.find(".cfDynRowTable tbody tr:visible").remove();
 		}
 		var num = value.length;
-		
+
 		// 设置分页信息
 		if(!CForm.isInitialized && $dynRow.attr("cf_isPaging") == "true"){
 			var limit = $dynRow.find(".pageBarContainer .pageSize option:first").val();
@@ -1232,25 +1232,25 @@
 		for ( var i = 0; i < num; i++) {
 			// 第（i+1）行数据
 			var record = value[i];
-			
+
 			var $cloneTr = $tr.clone(true);
-			
+
 			// 修改单选按钮name属性，否则会与其他行的单选按钮成一组
 			$cloneTr.find(":radio").attr({
 				name: "r_" + new Date().getTime()
 			});
-			
+
 			// 设置序号
 			var rowNum = record["SUB_TBL_NUM"];
 			if(!rowNum){
 				rowNum = i+1;
 			}
 			$cloneTr.find("td:first label").text(rowNum);
-			
+
 			// 产生一个32位随机数，赋给id为SUB_TBL_PK的域
 			var pk = CForm.createUUID();
 			$cloneTr.find("#SUB_TBL_PK").val(pk);
-			
+
 			var $fields = $cloneTr.find("[" + byAttr + "]");
 			$.each($fields, function(idx, field) {
 				var val = record[$(field).attr(byAttr)];
@@ -1270,14 +1270,14 @@
 					$(field).parent().removeClass("cfIsReadonly");
 				}
 			});
-			
+
 			fragment.appendChild($cloneTr[0]);
 		}
-		
+
 		// 一次性添加到DOM
 		$dynRow.find(".cfDynRowTable tbody").append(fragment);
 	};
-	
+
 	/**
 	 * 动态行-新增行
 	 */
@@ -1293,18 +1293,18 @@
 		// 产生一个32位随机数，赋给id为SUB_TBL_PK的域
 		var pk = CForm.createUUID();
 		$cloneTr.find("#SUB_TBL_PK").val(pk);
-		
+
 		// 设置单选按钮为未选中状态，并修改name属性，否则会与其他行的单选按钮成一组
 		$cloneTr.find(":radio").attr({
 			checked: false,
 			name: "r_" + new Date().getTime()
 		});
-		
+
 		// 设置复选框为未选中状态
 		$cloneTr.find(":checkbox").attr("checked", false);
-		
+
 		$curRow.after($cloneTr);
-		
+
 		// 序号重排
 		// 获取当前行的行号
 		var curNum = parseInt($curRow.find("td:first label").text());
@@ -1313,7 +1313,7 @@
 		$trs.each(function(i,tr){
 			$(tr).find("td:first label").text(i+1+curNum);
 		});
-		
+
 		return $cloneTr;
 	};
 
@@ -1329,7 +1329,7 @@
 		$nextAllTrs.each(function(i,tr){
 			$(tr).find("td:first label").text(i+curNum);
 		});
-		
+
 		// 动态行中所有可见行，即状态为1或3的行(为了兼容有tab页的情况，所以不用tr:visible)
 		var $allTrs = $dynRow.find("tr[cf_recordState=1],tr[cf_recordState=3]");
 		var $ftr = $allTrs.first();
@@ -1354,7 +1354,7 @@
 				$curRow.find(':radio, :checkbox').attr('checked', false);
 				$curRow.attr("cf_recordState","temp");
 				$curRow.hide();
-				
+
 				if(curRecordState != "1"){
 					$cloneCurRow.attr("cf_recordState","2");
 					$cloneCurRow.hide();
@@ -1386,7 +1386,7 @@
 			$curRow.attr("cf_recordState","2");
 			$curRow.hide();
 		}
-		
+
 	};
 
 	/**
@@ -1394,22 +1394,22 @@
 	 */
 	CForm.addTables = function($dynTable, $table, byAttr, value) {
 		var fragment = document.createDocumentFragment();
-		
+
 		for ( var i = 1; i < value.length; i++) {
 			// 第（i+1）个表格数据
 			var iData = value[i];
-			
+
 			var $cloneTable = $dynTable.clone(true);
-			
+
 			// 修改单选按钮name属性，否则会与其他表格的单选按钮成一组
 			$cloneTable.find(":radio").attr({
 				name: "r_" + new Date().getTime()
 			});
-			
+
 			// 产生一个32位随机数，赋给id为SUB_TBL_PK的域
 			var pk = CForm.createUUID();
 			$cloneTable.find("#SUB_TBL_PK").val(pk);
-			
+
 			var $fields = $cloneTable.find("[" + byAttr + "]");
 			$.each($fields, function(idx, field) {
 				var val = iData[$(field).attr(byAttr)];
@@ -1421,38 +1421,38 @@
 					}
 				}
 			});
-			
+
 			fragment.appendChild($cloneTable[0]);
 		}
-		
+
 		// 一次性添加到DOM
 		$dynTable.after($(fragment));
 	};
-	
+
 	/**
 	 * 动态表格-新增表格
 	 */
 	CForm.addTable = function($dynTable) {
 		var $cloneTable = $dynTable.clone(true);
-		
+
 		// 清空输入域的值(按钮、单选、复选、隐藏域的值不能清空)
 		$cloneTable.find(":input[type!=button][type!=radio][type!=checkbox][type!=hidden]").val('');
-		
+
 		// 产生一个32位随机数，赋给id为SUB_TBL_PK的域
 		var pk = CForm.createUUID();
 		$cloneTable.find("#SUB_TBL_PK").val(pk);
-		
+
 		// 设置单选按钮为未选中状态，并修改name属性，否则会与其他表格的单选按钮成一组
 		$cloneTable.find(":radio").attr({
 			checked: false,
 			name: "r_" + new Date().getTime()
 		});
-		
+
 		// 设置复选框为未选中状态
 		$cloneTable.find(":checkbox").attr("checked", false);
-		
+
 		$dynTable.after($cloneTable);
-		
+
 		return $cloneTable;
 	};
 
@@ -1467,16 +1467,16 @@
 			$dynTable.find(':input[type!=button][type!=radio][type!=checkbox][type!=hidden]').val('');
 			// 设置单选按钮、复选框为未选中状态
 			$dynTable.find(':radio, :checkbox').attr('checked', false);
-			
+
 			// 重新设置主键值，再次编辑时相当于一条新记录
 			$dynTable.find("#SUB_TBL_PK").val(CForm.createUUID());
-			
+
 			return;
 		}
 		// 不是最后一个表格，移除当前表格
 		$dynTable.remove();
 	};
-	
+
 	/**
 	 * 新建动态行序号列、主键域
 	 */
@@ -1486,7 +1486,7 @@
 			alert('未获取到要操作的表单！');
 			return;
 		}
-		
+
 		// 动态行
 		var $drs = $form.find(".cfDynRow[cf_modelId]");
 		if ($drs.length) {
@@ -1505,35 +1505,35 @@
 				var uuid = CForm.createUUID();
 				// 判断动态行定义期是否有序号列，兼容已有动态行
 				if ($numThs.length) {
-					$numTd.prepend("<input type='hidden' id='SUB_TBL_PK' name='主键' " 
-							+ "cf_modelItemId='SUB_TBL_PK' cf_modelItemName='主键' " 
-							+ "cf_elementType='field' value='" 
-							+ uuid 
+					$numTd.prepend("<input type='hidden' id='SUB_TBL_PK' name='主键' "
+							+ "cf_modelItemId='SUB_TBL_PK' cf_modelItemName='主键' "
+							+ "cf_elementType='field' value='"
+							+ uuid
 							+ "'/>");
 				} else {
 					// 添加序号列
 					$("<th style='width:50px;'>序号</th>").insertBefore($("th:first", $dr));
-					
+
 					// 添加序号和主键隐藏域
-					$("<td style='text-align:center;'>" 
+					$("<td style='text-align:center;'>"
 							+ "<input type='hidden' id='SUB_TBL_PK' name='主键' cf_modelItemId='SUB_TBL_PK' cf_modelItemName='主键' "
-							+ "cf_elementType='field' value='" 
-							+ uuid 
-							+ "'/>" 
-							+ "<label>1</label>" 
+							+ "cf_elementType='field' value='"
+							+ uuid
+							+ "'/>"
+							+ "<label>1</label>"
 							+ "</td>").insertBefore($numTd);
 				}
 			});
 		}
 	};
-	
+
 	/**
 	 * 处理动态行分页按钮事件
 	 */
 	CForm.loadDynRowPageBtn = function(dynRow){
 		var formId = $(dynRow).closest("[cf_elementType=form]").attr("id");
 		var zoneId = dynRow.id;
-		
+
 		// 总条数
 		var $totalNum = $(dynRow).find(".pageBarContainer .totalNum");
 		// 总页数
@@ -1542,7 +1542,7 @@
 		var $pageSize = $(dynRow).find(".pageBarContainer .pageSize");
 		// 当前页数
 		var $curPageNum = $(dynRow).find(".pageBarContainer .curPageNum");
-		
+
 		var limit = $pageSize.find("option:first").val();
 		// 首页
 		$(dynRow).find(".pageBarContainer .firstPage").click(function(){
@@ -1551,12 +1551,12 @@
 			// 请求数据
 			CForm.queryDynData(formId,zoneId,formDataId,1,limit,dynRow);
 		});
-		
+
 		// 上一页
 		$(dynRow).find(".pageBarContainer .dynPageUp").click(function(){
 			// 当前页数
 			var curPageNum = parseInt($curPageNum.val());
-			
+
 			var start = curPageNum-1;
 			if(start < 1)
 				start = 1;
@@ -1567,33 +1567,33 @@
 			// 请求数据
 			CForm.queryDynData(formId,zoneId,formDataId,start,limit,dynRow);
 		});
-		
+
 		// 下一页
 		$(dynRow).find(".pageBarContainer .dynPageDown").click(function(){
 			// 当前页数
 			var curPageNum = $curPageNum.val();
 			// 总页数
 			var totalPage = parseInt($totalPage.html());
-			
+
 			var start = parseInt(curPageNum)+1;
 			if(start > totalPage)
 				start = totalPage;
 			// 设置当前页数
 			$curPageNum.val(start);
-			
+
 			CForm.queryDynData(formId,zoneId,formDataId,start,limit,dynRow);
 		});
-		
+
 		// 尾页
 		$(dynRow).find(".pageBarContainer .endPage").click(function(){
 			// 总页数
 			var totalPage = parseInt($totalPage.html());
 			// 设置当前页数
 			$curPageNum.val(totalPage);
-			
+
 			CForm.queryDynData(formId,zoneId,formDataId,totalPage,limit,dynRow);
 		});
-		
+
 		// 选择每页显示条数
 		$pageSize.change(function(){
 			limit=$(this).children("option:selected").val();
@@ -1604,7 +1604,7 @@
 			}
 			CForm.queryDynData(formId,zoneId,formDataId,1,limit,dynRow);
 		});
-		
+
 		// 跳转页数
 		$curPageNum.bind('keypress',function(event){
 			if(event.keyCode != "13"){
@@ -1621,14 +1621,14 @@
 			CForm.queryDynData(formId,zoneId,formDataId,start,limit,dynRow);
 		});
 	}
-	
+
 	/**
 	 * 分页查询动态行数据
 	 */
 	CForm.queryDynData = function(formId,zoneId,formDataId,start,limit,dynRow){
 		var queryDynDataUrl = L5.webPath+"/command/dispatcher/"+
 							  "org.loushang.cform.formdata.cmd.FormDataDispatcherCmd/queryDynData";
-		
+
 		var dynDataCfg = {
 				url : queryDynDataUrl,
 				data :"formId="+formId+"&zoneId="+zoneId+"&formDataId="+formDataId+"&start="+start+"&limit="+limit,
@@ -1649,7 +1649,7 @@
 
 		$.ajax(dynDataCfg);
 	}
-	
+
 	/**
 	 * 新建动态表格主键域
 	 */
@@ -1659,7 +1659,7 @@
 			alert('未获取到要操作的表单！');
 			return;
 		}
-		
+
 		// 动态表格
 		var $dts = $form.find(".cfDynTable[cf_modelId]");
 		if ($dts.length) {
@@ -1667,15 +1667,15 @@
 				var $dt = $(this);
 				var uuid = CForm.createUUID();
 				// 添加主键隐藏域
-				$("td:first", $dt).append("<input type='hidden' id='SUB_TBL_PK' name='主键' " 
-						+ "cf_modelItemId='SUB_TBL_PK' cf_modelItemName='主键' " 
-						+ "cf_elementType='field' value='" 
-						+ uuid 
+				$("td:first", $dt).append("<input type='hidden' id='SUB_TBL_PK' name='主键' "
+						+ "cf_modelItemId='SUB_TBL_PK' cf_modelItemName='主键' "
+						+ "cf_elementType='field' value='"
+						+ uuid
 						+ "'/>");
 			});
 		}
 	};
-	
+
 	/**
 	 * tab组件初始化
 	 */
@@ -1685,7 +1685,7 @@
 			var lis = $(this).parent().children("li");
 			var panels = $(".cfTabBody");
 			var index =$(this).index();
-			
+
 			if (panels.eq(index)[0]) {
 				// 移除所有li的选中
 				lis.removeClass("selected");
@@ -1716,7 +1716,7 @@
 			}
 		});
 	};
-	
+
 	/**
 	 * 日期、日期时间组件初始化
 	 */
@@ -1727,7 +1727,7 @@
 		// 日期框组件
 		window.CFormDate && window.CFormDate();
 	};
-	
+
 	/**
 	 * 动态行初始化
 	 */
@@ -1737,14 +1737,14 @@
 		$(".cfDynRow").each(function(i,dynRow){
 			// 将默认行的状态设置为新增
 			$(this).find(".cfDynRowTable tbody tr").attr("cf_recordState","1");
-			
-			if(typeof(formDataId) == "undefined" || !formDataId 
+
+			if(typeof(formDataId) == "undefined" || !formDataId
 					|| $(this).attr("cf_isPaging") != "true"){
 				// 首环节(即没有实例数据时)，将动态行的分页按钮隐藏
 				$(this).find(".pageBarContainer").hide();
 				return true;
 			}
-			
+
 			// 分页
 			CForm.loadDynRowPageBtn(this);
 		});
@@ -1752,7 +1752,7 @@
 		var $curDynRow = null;
 		// 动态行当前行
 		var $curTr = null;
-		
+
 		// 可编辑列表的编辑区dialog
 		var gridDialogMap = new CForm.Map();
 		// 标识当前dialog的状态，1：新增 2：修改 3：查看
@@ -1761,7 +1761,7 @@
 		$(".cfDynRow").click(function(evt) {
 			/**
 			 * 解析行（列）合计关联的表单域，绑定表单域change事件
-			 */							
+			 */
 			// 记录已绑定的表单域ID，避免重复绑定
 			var bindedField = new Object();
 			// 行合计
@@ -1776,7 +1776,7 @@
 									.find(".cfRowSum").trigger("click");
 							});
 							bindedField[fieldId] = fieldId;
-						}										
+						}
 					}
 				}
 			});
@@ -1802,7 +1802,7 @@
 			// 取消绑定
 			$(".cfDynRow").unbind("click");
 		});
-		
+
 		// 增加一行按钮
 		$(".cfAddRow").click(
 				function() {
@@ -1820,7 +1820,7 @@
 					var $curRow = $(this).parents("tr").eq(0);
 					CForm.delRow($dynRow, $curRow);
 				});
-		
+
 		// 换行
 		$(".cfChangeRow").click(
 				function(e) {
@@ -1845,14 +1845,14 @@
 								"top" : e.pageY - 100 + "px"
 							}).show();
 				});
-		
+
 		// 取消换行
 		$(".cfCancelBtn").click(
 				function() {
 					$(".cfChangeRowDiv label:eq(1)").text("");
 					$(".cfChangeRowDiv").hide();
 				});
-		
+
 		// 确定换行(将当前行移动到目标行处，并重新设置序号)
 		$(".cfConfirmBtn").click(
 				function() {
@@ -1872,14 +1872,14 @@
 					$label.text("");
 					// 隐藏设置序号框
 					$(".cfChangeRowDiv").hide();
-					
+
 					var curRowNum = parseInt($curTr.find("td:first label").text());
 					var curRowIndex = curRowNum-firstRowNum;
-					
+
 					if(targetRowNum == curRowNum) {
 						return;
 					}
-					
+
 					var targetIndex = targetRowNum-firstRowNum;
 					// 记录开始行的索引和结束行的索引，用于序号重排
 					var startIndex;
@@ -1894,13 +1894,13 @@
 						endIndex = targetIndex;
 						$curTr.insertAfter($("tr:visible:eq(" + targetIndex + ")", $curDynRow));
 					}
-					
+
 					// 序号重排，只排列序号发生变动的行，即当前行与目标行之间的行
 					$curDynRow.find("tr:visible").slice(startIndex,endIndex+1).each(function(i,tr){
 						$(tr).find("td:first label").text(firstRowNum+i+startIndex);
 					});
 				});
-		
+
 		// 行合计
 		$(".cfRowSum").click(function(evt) {
 			var sumRule = $(this).attr("cf_sumRule");
@@ -1936,9 +1936,9 @@
 					return false;
 				}
 				$(this).val(val);
-			}			
+			}
 		});
-		
+
 		// 列合计
 		$(".cfColSum").click(function(evt) {
 			var sumValue = 0;
@@ -1949,16 +1949,16 @@
 				var fieldValue = $("[cf_elementType=field]", $td).val();
 				if(fieldValue){
 					sumValue += parseFloat(fieldValue);
-				}				
+				}
 			});
 			$(this).val(sumValue);
-			
+
 			// 如果是只读模式，需将值显示到页面上
 			if($(this).parent().hasClass("cfIsReadonly")){
 				$(this).siblings(".readOnlyFieldVal").text(sumValue);
 			}
 		});
-		
+
 		// 增加一行按钮(可编辑列表)
 		$(".cfAddEditGrid").click(
 			function(){
@@ -1968,7 +1968,7 @@
 								.dialog({title: "列表编辑区--新增"});
 				gridDialogMap.get($curDynRow.attr("id")).dialog("open");
 			});
-		
+
 		// 修改一行按钮(可编辑列表)
 		$(".cfModifyRow").click(
 			function(){
@@ -1981,7 +1981,7 @@
 								.dialog({title: "列表编辑区--修改"});
 				gridDialogMap.get($curDynRow.attr("id")).dialog("open");
 			});
-		
+
 		// 查看(用于可编辑列表在只读模式下时查看数据)
 		$(".cfCheckRow").click(
 			function(){
@@ -1997,13 +1997,13 @@
 				var checkDialog = gridDialogMap.get($curDynRow.attr("id"));
 				checkDialog.dialog("open");
 			});
-			
+
 		// 处理可编辑列表
 		$(".cfEditGrid").each(function(){
 			var $grid = $(this);
 			// 将第一行隐藏起来，并将状态设置为temp，做为设置实例数据时的模板
 			$grid.find("tbody tr:first").hide().attr("cf_recordState","temp");
-			
+
 			// 将可编辑列表中的编辑区缓存起来
 			var $editDialog = $grid.find(".cfEditGridDialog");
 			// 初始化dialog
@@ -2026,7 +2026,7 @@
 							$curTr = CForm.addRow($curDynRow, $curLastTr).show();
 						}
 						CForm.setRowData(datajson);
-						
+
 						dialog.dialog("close");
 					},
 					"取消" : function(){
@@ -2037,27 +2037,27 @@
 			// 缓存
 			gridDialogMap.put($grid.attr("id"),dialog);
 		});
-		
+
 		// 获取列表区当前行的值
 		// 返回值的结构为{编辑域ID：列表域值}
 		CForm.getRowData = function(){
 			var dataJson = {};
-			
+
 			// 获取当前行中，所有与编辑区有映射关系的域
 			$curTr.find("[cf_editfieldid]").each(function(i,field){
 				// 编辑区的域ID
 				var editfieldid = $(field).attr("cf_editfieldid");
 				var fieldValue = CForm.getFieldValue(field);
-				
+
 				// 组装域值
 				if(editfieldid){
 					dataJson[editfieldid] = fieldValue;
 				}
 			});
-			
+
 			return dataJson;
 		};
-		
+
 		// 设置列表区当前行的值
 		CForm.setRowData = function(jsonObj){
 			$curTr.find("[cf_editfieldid]").each(function(i,field){
@@ -2068,21 +2068,21 @@
 				var editFieldValue = jsonObj[editFieldId];
 				// 设置域值
 				CForm.setFieldValue(field,editFieldValue);
-				
+
 				if(field.type == "hidden"){
 					return true;
 				}
-				
+
 				// 可编辑列表中列表区的域都要设置成只读，防止在列表区直接修改数据
 				CForm.setFieldReadOnly(field);
 				$(this).parent().removeClass("cfIsReadonly");
 			});
 		};
-		
+
 		// 获取编辑区的值
 		CForm.getEditData = function() {
 			var dataJson = {};
-			
+
 			// 当前可编辑列表的编辑区ID为当前可编辑列表的ID后面加上"_dialog"
 			var curDialogId = $curDynRow.attr("id")+"_dialog";
 			// 编辑区中的所有域
@@ -2090,7 +2090,7 @@
 			$curEditfields.each(function(){
 				var editFieldId = $(this).attr("id");
 				var editFieldValue = $("#"+editFieldId)[0].value;
-				
+
 				// 校验数据
 				var isVal = CForm.valEditData(editFieldId, editFieldValue);
 				if(!isVal) {
@@ -2099,16 +2099,16 @@
 				}
 				dataJson[editFieldId] = editFieldValue;
 			})
-			
+
 			return dataJson;
 		};
-		
+
 		// 数据校验
 		CForm.valEditData = function(editFieldId, value) {
 			var $field = $curDynRow.find("[cf_editfieldid="+editFieldId+"]:first");
 			value = $.trim(value);
 			var fieldName = $field.attr("name");
-			
+
 			// 非空
 			if($field.hasClass("cfIsRequired")) {
 				var isValid = true;
@@ -2120,7 +2120,7 @@
 						if (!$options.length) {
 							isValid = false;
 						}
-	
+
 						break;
 					// 单选按钮
 					case "radio":
@@ -2129,7 +2129,7 @@
 						if (!$radios.length) {
 							isValid = false;
 						}
-	
+
 						break;
 					// 复选框
 					case "checkbox":
@@ -2138,22 +2138,22 @@
 						if (!$checkboxes.length) {
 							isValid = false;
 						}
-	
+
 						break;
 					default:
 						if (!value) {
 							isValid = false;
 						}
-	
+
 						break;
 				}
-				
+
 				if(!isValid) {
 					alert("[" + fieldName + "]不能为空！");
 					return false;
 				}
 			}
-			
+
 			// 整数
 			if($field.hasClass("cfIsInteger")) {
 				if (value && !CForm.isInteger(value)) {
@@ -2161,13 +2161,13 @@
 					return false;
 				}
 			}
-			
+
 			// 小数
 			if($field.hasClass("cfIsFloat")) {
 				if (value) {
 					if (!CForm.isFloat(value)) {
 						alert("[" + fieldName + "]必须为小数！");
-						return false;				
+						return false;
 					}else {
 						// 精确度校验
 						var precision = $field.attr("cf_fieldPrecision");
@@ -2181,15 +2181,15 @@
 					}
 				}
 			}
-			
+
 			// 邮政编码校验
 			if($field.hasClass("cfIsZipCode")){
 				if (value && !CForm.isZipCode(value)) {
 					alert("域[" + fieldName + "]的值不符合电子邮件格式！");
-					return false;	
+					return false;
 				}
 			}
-			
+
 			// 电子邮件校验
 			if($field.hasClass("cfIsEmail")){
 				if (value && !CForm.isEmail(value)) {
@@ -2197,7 +2197,7 @@
 					return false;
 				}
 			}
-			
+
 			// 身份证号校验
 			if($field.hasClass("cfIsIdCard")){
 				var result = L5.checkIdCard(value);
@@ -2206,7 +2206,7 @@
 					return false;
 				}
 			}
-			
+
 			// 固定电话校验
 			if($field.hasClass("cfIsPhoneNum")){
 				if (value && !CForm.cfIsPhoneNum(value)) {
@@ -2214,7 +2214,7 @@
 					return false;
 				}
 			}
-		
+
 			// 手机号码校验
 			if($field.hasClass("cfIsMobileNum")){
 				if (value && !CForm.cfIsMobileNum(value)) {
@@ -2222,7 +2222,7 @@
 					return false;
 				}
 			}
-			
+
 			// 正则表达式校验
 			if($field.hasClass("cfIsRegExp")){
 				var reg = $field.attr("cf_regExp");
@@ -2234,19 +2234,19 @@
 					}
 				}
 			}
-			
+
 			return true;
 		}
-		
+
 		// 设置编辑区的值
 		CForm.setEditData = function(jsonObj){
 			// 当前可编辑列表的编辑区ID为当前可编辑列表的ID后面加上"_dialog"
 			var curDialogId = $curDynRow.attr("id")+"_dialog";
-			
+
 			for(var key in jsonObj){
 				$("#"+key).val(jsonObj[key]);
 			}
-			
+
 			// 如果当前编辑区的状态为3，则表示“查看”状态
 			if(dialogState == 3){
 				var fields = $("#"+curDialogId).find("[cf_elementType=editField]");
@@ -2256,7 +2256,7 @@
 				});
 			}
 		};
-		
+
 		// 清空编辑区
 		CForm.resetEditTable = function(){
 			// 当前编辑区
@@ -2267,21 +2267,21 @@
 			$curDialog.find(":radio").attr({checked: false});
 			// 设置复选框为未选中状态
 			$curDialog.find(":checkbox").attr("checked", false);
-			
+
 			// 只读状态下，TD中会有文本，需要移除
 			if(dialogState == 3){
 				$curDialog.find("font.readOnlyFieldVal").remove();
 			}
 		}
 	};
-	
+
 	/**
 	 * 动态表格初始化
 	 */
 	CForm.initDynTable = function() {
 		// 加载序号列
 		CForm.loadDynTableNum();
-		
+
 		// 增加一个表格
 		$('.cfAddTable').click(
 				function() {
@@ -2298,7 +2298,7 @@
 					CForm.delTable($dynTable);
 				});
 	};
-	
+
 	/**
 	 * 域长度控制初始化
 	 */
@@ -2308,29 +2308,29 @@
 			var len = parseInt($(this).attr("cf_fieldLength"));
 			if(!len) {
 				len = 100;
-			}		
+			}
 
 			var strVal = $(this).val().toString()+"";
-		    //预期计数：中文2字节，英文1字节 
-		    var a = 0; 
+		    //预期计数：中文2字节，英文1字节
+		    var a = 0;
 		    //临时字串
-		    var temp = ''; 
-		    for (var i = 0;i < strVal.length;i ++) 
-		    { 
-		        if (strVal.charCodeAt(i) > 255)  
+		    var temp = '';
+		    for (var i = 0;i < strVal.length;i ++)
+		    {
+		        if (strVal.charCodeAt(i) > 255)
 		        {
-		            //按照预期计数增加2 
-		             a+=2; 
-		        } 
-		        else 
-		        { 
-		             a++; 
-		        } 
-		        //如果增加计数后长度大于限定长度，就直接返回临时字符串 
-		        if(a > len) { $(this).val(temp); return false;} 
-		        //将当前内容加到临时字符串 
-		        temp += strVal.charAt(i); 
-		    } 
+		            //按照预期计数增加2
+		             a+=2;
+		        }
+		        else
+		        {
+		             a++;
+		        }
+		        //如果增加计数后长度大于限定长度，就直接返回临时字符串
+		        if(a > len) { $(this).val(temp); return false;}
+		        //将当前内容加到临时字符串
+		        temp += strVal.charAt(i);
+		    }
 		});
 
 		// 控制textarea的长度
@@ -2338,32 +2338,32 @@
 			var len = parseInt($(this).attr("cf_fieldLength"));
 			if(!len) {
 				len = 500;
-			}		
+			}
 
 			var strVal = $(this).val().toString()+"";
-		    //预期计数：中文2字节，英文1字节 
-		    var a = 0; 
+		    //预期计数：中文2字节，英文1字节
+		    var a = 0;
 		    //临时字串
-		    var temp = ''; 
-		    for (var i = 0;i < strVal.length;i ++) 
-		    { 
-		        if (strVal.charCodeAt(i) > 255)  
+		    var temp = '';
+		    for (var i = 0;i < strVal.length;i ++)
+		    {
+		        if (strVal.charCodeAt(i) > 255)
 		        {
-		            //按照预期计数增加2 
-		             a+=2; 
-		        } 
-		        else 
-		        { 
-		             a++; 
-		        } 
-		        //如果增加计数后长度大于限定长度，就直接返回临时字符串 
-		        if(a > len) { $(this).val(temp); return false;} 
-		        //将当前内容加到临时字符串 
-		        temp += strVal.charAt(i); 
+		            //按照预期计数增加2
+		             a+=2;
+		        }
+		        else
+		        {
+		             a++;
+		        }
+		        //如果增加计数后长度大于限定长度，就直接返回临时字符串
+		        if(a > len) { $(this).val(temp); return false;}
+		        //将当前内容加到临时字符串
+		        temp += strVal.charAt(i);
 		    }
 		});
 	};
-	
+
 	/**
 	 * 多行文本框高度自适应
 	 */
@@ -2386,7 +2386,7 @@
 		case "80":
 			if (isUseDataPermit == "1") {
 				//进行数据权限控制
-				url = L5_webPath 
+				url = L5_webPath
 				+ "?isChkbox=0&selType=8&struType=00&isDataPermitControl=1"
 			} else {
 				//不进行数据权限控制
@@ -2445,7 +2445,7 @@
 			var selectType = $(this).attr('cf_selectType');
 			// 是否启用数据权限
 			var isUseDataPermit = $(this).attr('cf_isUseDataPermit');
-			
+
 			var organIdField = $(this).attr('cf_organIdField');
 			var organNameField = $(this).attr('cf_organNameField');
 			var curTd = $(this).parent();
@@ -2504,7 +2504,7 @@
 			var fileurl = $file.val();
 			if(fileurl!=""&&canUp){
 				$.ajaxFileUpload({
-			        url: L5.webPath + "/service/cform/file/upload", 
+			        url: L5.webPath + "/service/cform/file/upload",
 			        type: 'post',
 			        secureuri: false,
 			        fileElementId: 'file',
@@ -2517,7 +2517,7 @@
 			        		$fileContainer.append($('<li id='+data[0]+'><div class="filename">'+data[1]+'</div><div class="filedel">×</div></li>'))
 			        	}
 			        },
-			        error: function(data, status, e){ 
+			        error: function(data, status, e){
 			        }
 			    });
 			}
@@ -2526,7 +2526,7 @@
 		$(document).on("click",".cfFile>.cfFileContainer .filename",function(){
 			var uuid = $(this).parent().attr('id');
 			var fileName = $(this).text();
-			window.location.href = L5.webPath + "/service/cform/file/download?uuid="+uuid+"&fileName="+fileName; 
+			window.location.href = L5.webPath + "/service/cform/file/download?uuid="+uuid+"&fileName="+fileName;
 		});
 		//点击删除
 		$(document).on("click",".cfFile>.cfFileContainer .filedel",function(){
@@ -2537,7 +2537,7 @@
 			$.ajax({
 				url:url,
 				data:JSON.stringify({"uuid":uuid,"fileName":fileName}),
-				contentType: "application/json",  
+				contentType: "application/json",
 				type:"POST",
 				success:function(data){
 					if(data){
@@ -2557,7 +2557,7 @@
 		$(document).on("click",".cfFiles>.cfFilesFields>.cfFilesField>.cfFileAdd",function(){
 			var $cfFileInfo = $(this).parents(".cfFiles").find(".cfFileInfo");
 			//剩余可增加数量
-			var fileNumber = $cfFileInfo.attr("cf_number");	
+			var fileNumber = $cfFileInfo.attr("cf_number");
 			if(fileNumber>1){
 				//复制本身为模板
 				var $tpl = $(this).parents(".cfFilesField").clone();
@@ -2579,16 +2579,16 @@
 		//删除按钮事件
 		$(document).on("click",".cfFiles>.cfFilesFields>.cfFilesField>.cfFileDel",function(){
 			var $cfFileInfo = $(this).parents(".cfFiles").find(".cfFileInfo");
-			var fileNumber = $cfFileInfo.attr("cf_number");	
+			var fileNumber = $cfFileInfo.attr("cf_number");
 			$(this).parents(".cfFilesField").remove();
-			$cfFileInfo.attr("cf_number",(Number(fileNumber)+1));	
+			$cfFileInfo.attr("cf_number",(Number(fileNumber)+1));
 		});
 		//对文件选择框绑定值改变事件
 		$(document).on("change",".cfFilesSelect",function(){
 			var $cfFileInfo = $(this).parents(".cfFiles").find(".cfFileInfo");
 			var formatStr = $cfFileInfo.attr("cf_format");
 			var formatRegex = "("+formatStr.split(",").join('|')+")$";
-			var re=new RegExp(formatRegex);  
+			var re=new RegExp(formatRegex);
 			var fileSize = $cfFileInfo.attr("cf_size");
 			var $file = $(this);
 			var val = $file.val();
@@ -2617,7 +2617,7 @@
 		$(document).on("click",".cfFiles>.cfFilesFields .cfFilelink",function(){
 			var uuid = $(this).parent().attr('id');
 			var fileName = $(this).text();
-			window.location.href = L5.webPath + "/service/cform/file/download?uuid="+uuid+"&fileName="+fileName; 
+			window.location.href = L5.webPath + "/service/cform/file/download?uuid="+uuid+"&fileName="+fileName;
 		});
 		//删除文件
 		$(document).on("click",".cfFiles>.cfFilesFields .cfFileDelIcon",function(){
@@ -2628,7 +2628,7 @@
 			$.ajax({
 				url:url,
 				data:JSON.stringify({"uuid":uuid,"fileName":fileName}),
-				contentType: "application/json",  
+				contentType: "application/json",
 				type:"POST",
 				success:function(data){
 					if(data){
@@ -2645,7 +2645,7 @@
 				    			}
 				    			list.push(obj);
 					    	});
-					    	
+
 					    }
 					    if($oldfiles.length>0){
 				    		$oldfiles.each(function(){
@@ -2701,7 +2701,7 @@
 	};
 	CForm.uploadEvent = function(ids,dtd){
 		$.ajaxFileUpload({
-			url: L5.webPath + "/service/cform/file/upload?uuid="+ids[0], 
+			url: L5.webPath + "/service/cform/file/upload?uuid="+ids[0],
 			type: 'post',
 			secureuri: false,
 			fileElementId: ids[0],
@@ -2715,7 +2715,7 @@
 					dtd.resolve();
 				}
 			},
-			error: function(data, status, e){ 
+			error: function(data, status, e){
 				var cf = confirm($("#"+ids[0])[0].files[0].name + "文件上传失败，是否重新上传");
 				if(cf==true){
 					CForm.uploadEvent(ids,dtd);
@@ -2727,7 +2727,7 @@
 	CForm.initDynSelect = function(){
 		//所有关联子级的父级
 		var $dynSelect = $("select[cf_databindchild]");
-		
+
 		//对父级绑定值改变事件
 		$dynSelect.on("change",function(){
 			//将父级下拉框的值显式存储
@@ -2738,9 +2738,9 @@
 			$(this).trigger("updatechildselectoption");
 			//初始化子孙级查询插件
 			$(this).trigger("updatechildselectdynquery");
-			
+
 		});
-		
+
 		//递归清空子孙级下拉框选择项
 		$("select[cf_databindchild]").on("removechildselectoption",function(){
 			var $self = $(this);
@@ -2752,7 +2752,7 @@
 				return;
 			}
 		});
-		
+
 		//初始化子孙级查询插件
 		$("select[cf_databindchild]").on("updatechildselectdynquery",function(){
 			var $self = $(this);
@@ -2767,7 +2767,7 @@
 				return;
 			}
 		});
-		
+
 		//更新子级选项
 		$("select[cf_databindchild]").on("updatechildselectoption",function(){
 			var $self = $(this);
@@ -2779,7 +2779,7 @@
 			var parentselectid = $self.attr("id");
 			//表单id
 			var formId = $self.closest("[cf_elementType=form]").attr("id");
-			
+
 			if(childselectparam != "" && childselectparam != null){
 				//组装用于获取子级数据绑定的参数
 				var databindparam = {
@@ -2791,7 +2791,7 @@
 				$.ajax({
 					url:L5.webPath + "/service/cform/dynselect/update",
 					data:JSON.stringify(databindparam),
-					contentType: "application/json",  
+					contentType: "application/json",
 					type:"POST",
 					async:false,
 					success:function(data){
@@ -2819,9 +2819,9 @@
 			}else{
 				return;
 			}
-			
+
 		});
-		
+
 		//在表单数据加载完成，表单环节控制事件之前触发
 		CForm.on('dynSelectUpdate', function(){
 			var $dynselect = $("select[cf_databindchild]");
@@ -2952,7 +2952,7 @@
 					}
 					break;
 			}
-			
+
 		});
 		$dyncheck.on("change",function(){
 			$(this).trigger("dyncheck");
@@ -2961,7 +2961,7 @@
 
 
     CForm.initQRCodeImage=function(){
-        $(".cfImage").attr("src",L5.webPath + "/service/tools/getQRCode?content=2018070822");
+        // $(".cfImage").attr("src",L5.webPath + "/service/tools/getQRCode?content=2018070822");
 	};
 	/**
 	 * 云表单加载完毕后需要执行的初始化操作
@@ -2969,10 +2969,10 @@
 	CForm.init = function() {
 		// 初始化域长度控制
 		CForm.initFieldLengthCtr();
-		
+
 		// 多行文本框高度自适应
 		CForm.initAutoHeight();
-		
+
 		// 初始化tab
 		if ($(".cfTab li").length) {
 			CForm.initTab();
@@ -2982,27 +2982,27 @@
 		if ($(".cfDateTime,.cfDate").length) {
 			CForm.initDate();
 		}
-		
+
 		// 初始化通用帮助
 		if ($(".cfOrganCommonHelp").length) {
 			CForm.initCommonHelp();
 		}
-		
+
 		// 初始化动态行
 		if ($(".cfDynRow").length) {
 			CForm.initDynRow();
 		}
-		
+
 		// 初始化动态表格
 		if ($(".cfDynTable").length) {
 			CForm.initDynTable();
 		}
-		
+
 		//初始化文件上传下载
 		if($(".cfFile").length){
 			CForm.initFile();
 		}
-		
+
 		//初始化多文件上传下载
 		if($(".cfFiles").length){
 			CForm.initFiles();
@@ -3021,7 +3021,7 @@
         }
 
 	};
-	
+
 })(jQuery);
 
 /**
@@ -3042,7 +3042,7 @@
 		length : null,
 		/**
 		 * 把值放入map对象中，比如：data.put(key,value);
-		 * 
+		 *
 		 * @method put
 		 * @param {String}
 		 *            key 键值
@@ -3057,7 +3057,7 @@
 		},
 		/**
 		 * 根据键值从map对象中取值，比如：var val = data.get(key);
-		 * 
+		 *
 		 * @method get
 		 * @param {String}
 		 *            key 键值
@@ -3068,7 +3068,7 @@
 		},
 		/**
 		 * 从map对象中移除指定键值的值，比如：data.remove(key);
-		 * 
+		 *
 		 * @method remove
 		 * @param {String}
 		 *            key 键值
@@ -3080,12 +3080,12 @@
 				this.length--;
 			}
 			delete this.map[key];
-			
+
 			return ret;
 		},
 		/**
 		 * 获得map对象中值的个数
-		 * 
+		 *
 		 * @method size
 		 * @return {Int} 长度
 		 */
@@ -3100,7 +3100,7 @@
 		},
 		/**
 		 * 将map对象中所有的值组装为字符串返回
-		 * 
+		 *
 		 * @method toString
 		 * @return {String} 数据
 		 */
@@ -3130,7 +3130,7 @@
 	CForm.List.prototype = {
 		/**
 		 * 把对象添加到list对象中
-		 * 
+		 *
 		 * @method add
 		 * @param {Oject}
 		 *            obj 对象
@@ -3140,7 +3140,7 @@
 		},
 		/**
 		 * 根据索引得到对象
-		 * 
+		 *
 		 * @method get
 		 * @param {String}
 		 *            index 索引
@@ -3152,7 +3152,7 @@
 		},
 		/**
 		 * 得到list对象的长度
-		 * 
+		 *
 		 * @method size
 		 * @return {Int} 长度
 		 */
@@ -3161,7 +3161,7 @@
 		},
 		/**
 		 * 将list对象中的数据转换组装成字符串返回
-		 * 
+		 *
 		 * @method toString
 		 * @return {String} 数据
 		 */
@@ -3180,16 +3180,16 @@
 /**
  * 生成UUID
  * CForm.createUUID()
- * 
+ *
 */
 (function($){
 	function UUID(){
 	    this.id = this.createUUID();
 	}
-	 
+
 	UUID.prototype.valueOf = function(){ return this.id; };
 	UUID.prototype.toString = function(){ return this.id; };
-	 
+
 	UUID.prototype.createUUID = function(){
 	    var dg = new Date(1582, 10, 15, 0, 0, 0, 0);
 	    var dc = new Date();
@@ -3212,7 +3212,7 @@
 	 var quadString = '';
 	 var i = 0;
 	 for(i=0;i<base16.length;i++){
-	     quadArray.push(base16.substring(i,i+1));   
+	     quadArray.push(base16.substring(i,i+1));
 	 }
 	 for(i=Math.floor(start/4);i<=Math.floor(end/4);i++){
 	     if(!quadArray[i] || quadArray[i] == '') quadString += '0';
@@ -3223,7 +3223,7 @@
 	UUID.returnBase = function(number, base){
 	 return (number).toString(base).toUpperCase();
 	};
-	 
+
 	UUID.rand = function(max){
 	 return Math.floor(Math.random() * (max + 1));
 	};
