@@ -110,7 +110,7 @@
                 dataBindParam: $(target).attr("cf_dataBindParam")
             };
 
-            showWindow(L.getLocaleMessage("cf.widget.text", "单行文本"), "widget/text/textattr.jsp", 400, 400,
+            showWindow(L.getLocaleMessage("cf.widget.text", "单行文本"), "widget/image/textattr.jsp", 400, 400,
                 oldProperty, handleReturn);
 
             /**
@@ -150,6 +150,7 @@
                 };
                 $(target).attr(newProperty);
 
+                $(target).attr("src",L5.webPath+result.value);
                 // 动态生成业务模型
                 if (CForm.isCreateTable == "1") {
                     // 业务模型项ID
