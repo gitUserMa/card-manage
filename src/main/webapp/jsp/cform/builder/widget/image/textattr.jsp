@@ -25,26 +25,27 @@
 			</ul>
 			<div id="baseAttrDiv" class="ui-tabs-panel">
 				<ul>
-					<li><label for="fieldName"><s:message code="cf.name" text="名称"/></label><input type="text" id="fieldName" name="<s:message code="cf.widget.fieldname" text="域名称"/>" class="cfIsRequired" ></input></li>				
-					<li><input type="checkbox" id="createId" name="createId" style="display:inline;"></input><label for="createId" style="display:inline;"><s:message code="cf.generateid" text="自动生成ID"/></label></li>				
-					<li><label for="fieldId">ID</label><input type="text" id="fieldId" name="<s:message code="cf.widget.fieldid" text="域ID"/>" class="cfIsRequired cfNotStartWithNum"></input></li>				
+					<li><label for="fieldName"><s:message code="cf.name" text="名称"/></label><input type="text" id="fieldName" name="<s:message code="cf.widget.fieldname" text="域名称"/>" class="cfIsRequired" ></input></li>
+					<li><input type="checkbox" id="createId" name="createId" style="display:inline;"></input><label for="createId" style="display:inline;"><s:message code="cf.generateid" text="自动生成ID"/></label></li>
+					<li><label for="fieldId">ID</label><input type="text" id="fieldId" name="<s:message code="cf.widget.fieldid" text="域ID"/>" class="cfIsRequired cfNotStartWithNum"></input></li>
 				</ul>
 			</div>
 			<div id="dataBindDiv" class="ui-tabs-panel ui-tabs-hide">
 				<ul>
 					<li>
-						<input type="radio"	id="staticValueRdo" name="dataBind" value="static" style="display:inline;"/><label style="width: 62px;"  class="rightLabel" for="staticValueRdo" style="display:inline;"><s:message code="cf.widget.staticvalue" text="静态值"/></label>
+						<input type="radio"	id="staticValueRdo" name="dataBind" value="static" style="display:inline;"/>
+						<label style="width: 62px;"  class="rightLabel" for="staticValueRdo"  style="display:inline;">图片路径</label>
 						<input type="text" id="staticValue" name="staticValue" ></input>
 					</li>
-					<li>
-						<input type="radio"	id="dynmValueRdo" name="dataBind" value="dynm" style="display:inline;"/><label class="rightLabel" for="dynmValueRdo" style="display:inline;"><s:message code="cf.widget.dynamicvalue" text="动态值"/></label>
-							
-					</li>
-					<li>
-						<select name="dataBindType" id="dataBindType">
-						 	<option value="default"	selected><s:message code="cf.bdr.select" text="请选择"/></option>
-						</select>		
-					</li>
+					<%--<li>--%>
+						<%--<input type="radio"	id="dynmValueRdo" name="dataBind" value="dynm" style="display:inline;"/><label class="rightLabel" for="dynmValueRdo" style="display:inline;"><s:message code="cf.widget.dynamicvalue" text="动态值"/></label>--%>
+
+					<%--</li>--%>
+					<%--<li>--%>
+						<%--<select name="dataBindType" id="dataBindType">--%>
+						 	<%--<option value="default"	selected><s:message code="cf.bdr.select" text="请选择"/></option>--%>
+						<%--</select>--%>
+					<%--</li>--%>
 					<!--  id必须为dataBindParamLi-->
 					<li id="dataBindParamLi">
 					</li>
@@ -125,7 +126,7 @@
 				}
 
 				if (fromParent.value) {
-					$("#staticValue").attr('value', fromParent.value);
+					$("#staticValue").attr('src', fromParent.value);
 					$("#staticValueRdo").trigger("click");
 				}
 

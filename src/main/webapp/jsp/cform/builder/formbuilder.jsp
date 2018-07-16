@@ -42,7 +42,7 @@
 		<link rel="stylesheet" href="skin/css/dialog.css" />
 		<link rel="stylesheet" href="skin/css/colorpicker.css" />
         <%--二维码图片样式--%>
-		<link rel="stylesheet" href="widget/image/image.css" />
+		<link rel="stylesheet" href="<%=webPath %>/jsp/cform/builder/widget/image/image.css" />
 
 		<script src="<%=webPath%>/jsp/cform/skin/js/jquery.js"></script>
 		<next:ScriptManager></next:ScriptManager>
