@@ -4,7 +4,6 @@ import com.inspur.health.card.utils.QRCodeUtil;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
@@ -25,7 +24,8 @@ public class QRCodeController {
      * @param response
      */
     @RequestMapping(value = "/getQRCode", method = {RequestMethod.POST, RequestMethod.GET})
-    public void getErWeiCode(@RequestParam("content") String content, HttpServletResponse response) {
+    public void getErWeiCode(HttpServletResponse response) {
+        String content="2018071234";
         ServletOutputStream stream = null;
         try {
             if (content != null && !"".equals(content)) {
